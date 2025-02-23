@@ -10,7 +10,6 @@ import {
   fetchProducts,
 } from "@/lib/store/products/slice";
 import { Tab, Tabs } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function ProductsPage() {
@@ -31,6 +30,9 @@ export default function ProductsPage() {
     filter: string;
     value: string;
   } | null>(null);
+
+  const prevServerFilter = useRef(serverFilter);
+  const prevCurrentTab = useRef(currentTab);
 
   const productsColumns = [
     "thumbnail",
@@ -73,18 +75,26 @@ export default function ProductsPage() {
           queryParams[serverFilter.filter] = serverFilter.value;
         }
 
+        const isServerFilterChange =
+          prevServerFilter.current?.filter !== serverFilter?.filter ||
+          prevServerFilter.current?.value !== serverFilter?.value;
+        const isCurrentTabChange = prevCurrentTab.current !== currentTab;
+
+        const newPage = isServerFilterChange || isCurrentTabChange ? 1 : page;
+
+        prevServerFilter.current = serverFilter;
+        prevCurrentTab.current = currentTab;
+
         await dispatch(
           fetchProducts({
             limit,
-            page,
+            page: newPage,
             filters: queryParams,
             signal: controller.signal,
           })
         ).unwrap();
       } catch (error) {
-        if (!axios.isCancel(error)) {
-          console.error("Fetch error:", error);
-        }
+        console.error("Fetch error:", error);
       }
     };
 
@@ -136,26 +146,18 @@ export default function ProductsPage() {
   const titleOptions = Array.from(
     new Set(
       allProducts
-        .filter((p) => {
-          if (currentTab === "Laptops") {
-            return p.category === "laptops";
-          } else {
-            return true;
-          }
-        })
+        .filter((p) =>
+          currentTab === "Laptops" ? p.category === "laptops" : true
+        )
         .map((p) => p.title)
     )
   );
   const brandOptions = Array.from(
     new Set(
       allProducts
-        .filter((p) => {
-          if (currentTab === "Laptops") {
-            return p.category === "laptops";
-          } else {
-            return true;
-          }
-        })
+        .filter((p) =>
+          currentTab === "Laptops" ? p.category === "laptops" : true
+        )
         .map((p) => p.brand)
     )
   );

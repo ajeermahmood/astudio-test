@@ -18,12 +18,15 @@ export const fetchUsers = createAsyncThunk(
     limit,
     page,
     filters = {},
+    signal,
   }: {
     limit: number;
     page: number;
     filters?: { [key: string]: string };
+    signal?: AbortSignal;
   }) => {
     const skip = (page - 1) * limit;
+    const config = signal ? { signal } : {};
 
     try {
       if (

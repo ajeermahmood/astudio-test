@@ -5,7 +5,7 @@ import PaginationComp from "@/components/common/Pagination";
 import TableSkeleton from "@/components/common/TableSkeleton";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchAllUsers, fetchUsers } from "@/lib/store/users/slice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function UsersPage() {
   const dispatch = useAppDispatch();
@@ -16,6 +16,9 @@ export default function UsersPage() {
     filter: string;
     value: string;
   } | null>(null);
+
+  const prevServerFilter = useRef(serverFilter);
+  const abortControllerRef = useRef<AbortController>(null);
 
   const usersColumns = [
     "image",
@@ -33,52 +36,80 @@ export default function UsersPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (serverFilter && serverFilter.value) {
-      dispatch(
-        fetchUsers({
-          limit,
-          page,
-          filters: { [serverFilter.filter]: serverFilter.value },
-        })
-      );
-    } else {
-      dispatch(fetchUsers({ limit, page }));
-    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const fetchData = async () => {
+      try {
+        const queryParams = serverFilter?.value
+          ? { [serverFilter.filter]: serverFilter.value }
+          : {};
+
+        const isServerFilterChange =
+          prevServerFilter.current?.filter !== serverFilter?.filter ||
+          prevServerFilter.current?.value !== serverFilter?.value;
+
+        const newPage = isServerFilterChange ? 1 : page;
+        prevServerFilter.current = serverFilter;
+
+        await dispatch(
+          fetchUsers({
+            limit,
+            page: newPage,
+            filters: queryParams,
+            signal: controller.signal,
+          })
+        ).unwrap();
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      controller.abort();
+    };
   }, [dispatch, limit, page, serverFilter]);
 
   const handlePageSizeChange = (newLimit: number) => {
-    dispatch(
-      fetchUsers({
-        limit: newLimit,
-        page: 1,
-        filters:
-          serverFilter && serverFilter.value
-            ? { [serverFilter.filter]: serverFilter.value }
-            : {},
-      })
-    );
+    const filters = serverFilter?.value
+      ? { [serverFilter.filter]: serverFilter.value }
+      : {};
+
+    dispatch(fetchUsers({ limit: newLimit, page: 1, filters }));
   };
 
   const handlePageChange = (newPage: number) => {
-    dispatch(
-      fetchUsers({
-        limit,
-        page: newPage,
-        filters:
-          serverFilter && serverFilter.value
-            ? { [serverFilter.filter]: serverFilter.value }
-            : {},
-      })
-    );
+    const filters = serverFilter?.value
+      ? { [serverFilter.filter]: serverFilter.value }
+      : {};
+
+    dispatch(fetchUsers({ limit, page: newPage, filters }));
+  };
+
+  const formatBirthDate = (birthDate: string | null | undefined): string => {
+    if (!birthDate) return "";
+
+    const date = new Date(birthDate);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return `${year}-${month}-${day}`;
   };
 
   const handleFilterChange = (filter: string, value: string) => {
+    abortControllerRef.current?.abort();
+
     if (filter === "client") {
       setClientFilter(value);
       setServerFilter(null);
     } else {
-      setServerFilter({ filter, value });
-      dispatch(fetchUsers({ limit, page: 1, filters: { [filter]: value } }));
+      setServerFilter({
+        filter,
+        value: filter === "birthDate" ? formatBirthDate(value) : value,
+      });
     }
   };
 
