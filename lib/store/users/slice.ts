@@ -21,6 +21,7 @@ interface UsersState {
   page: number;
   loading: boolean;
   error: string | null;
+  allUsers: User[];
 }
 
 const initialState: UsersState = {
@@ -30,6 +31,7 @@ const initialState: UsersState = {
   page: 1,
   loading: false,
   error: null,
+  allUsers: [],
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -81,6 +83,14 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
+export const fetchAllUsers = createAsyncThunk(
+  "users/fetchAllUsers",
+  async () => {
+    const response = await axios.get("https://dummyjson.com/users?limit=100");
+    return response.data.users;
+  }
+);
+
 const usersSlice = createSlice({
   name: "users",
   initialState,
@@ -100,6 +110,14 @@ const usersSlice = createSlice({
     builder.addCase(fetchUsers.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || "Failed to fetch users";
+    });
+
+    // fetchAllUsers
+    builder.addCase(fetchAllUsers.fulfilled, (state, action) => {
+      state.allUsers = action.payload;
+    });
+    builder.addCase(fetchAllUsers.rejected, (state, action) => {
+      console.error("Failed to fetch all users:", action.error.message);
     });
   },
 });

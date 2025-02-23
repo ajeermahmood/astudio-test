@@ -24,6 +24,8 @@ interface ProductsState {
   page: number;
   loading: boolean;
   error: string | null;
+  allProducts: Product[];
+  allCategories: string[];
 }
 
 const initialState: ProductsState = {
@@ -33,6 +35,8 @@ const initialState: ProductsState = {
   page: 1,
   loading: false,
   error: null,
+  allProducts: [],
+  allCategories: [],
 };
 
 interface FetchProductsParams {
@@ -85,6 +89,26 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
+export const fetchAllProducts = createAsyncThunk(
+  "products/fetchAllProducts",
+  async () => {
+    const response = await axios.get(
+      "https://dummyjson.com/products?limit=100"
+    );
+    return response.data.products;
+  }
+);
+
+export const fetchAllCategories = createAsyncThunk(
+  "products/fetchAllCategories",
+  async () => {
+    const response = await axios.get(
+      "https://dummyjson.com/products/category-list"
+    );
+    return response.data;
+  }
+);
+
 const productsSlice = createSlice({
   name: "products",
   initialState,
@@ -101,13 +125,28 @@ const productsSlice = createSlice({
       state.loading = false;
       state.products = action.payload.products;
       state.total = action.payload.total;
-      // Update pagination state
       state.limit = action.meta.arg.limit;
       state.page = action.meta.arg.page;
     });
     builder.addCase(fetchProducts.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || "Failed to fetch products";
+    });
+
+    // fetchAllProducts
+    builder.addCase(fetchAllProducts.fulfilled, (state, action) => {
+      state.allProducts = action.payload;
+    });
+    builder.addCase(fetchAllProducts.rejected, (state, action) => {
+      console.error("Failed to fetch all users:", action.error.message);
+    });
+
+    // fetchAllCategories
+    builder.addCase(fetchAllCategories.fulfilled, (state, action) => {
+      state.allCategories = action.payload;
+    });
+    builder.addCase(fetchAllCategories.rejected, (state, action) => {
+      console.error("Failed to fetch all users:", action.error.message);
     });
   },
 });

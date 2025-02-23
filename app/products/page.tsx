@@ -1,42 +1,51 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { fetchProducts } from "@/lib/store/products/slice";
 import DataTable from "@/components/common/DataTable";
 import Filters, { AdditionalFilter } from "@/components/common/Filters";
 import PaginationComp from "@/components/common/Pagination";
+import TableSkeleton from "@/components/common/TableSkeleton";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
-  Tabs,
-  Tab,
-  Paper,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+  fetchAllCategories,
+  fetchAllProducts,
+  fetchProducts,
+} from "@/lib/store/products/slice";
+import { Tab, Tabs } from "@mui/material";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function ProductsPage() {
   const dispatch = useAppDispatch();
-  const { products, total, limit, page, loading, error } = useAppSelector(
-    (state) => state.products
-  );
+  const {
+    products,
+    total,
+    limit,
+    page,
+    allProducts,
+    allCategories,
+    loading,
+    error,
+  } = useAppSelector((state) => state.products);
   const [currentTab, setCurrentTab] = useState("ALL");
   const [clientFilter, setClientFilter] = useState("");
   const [serverFilter, setServerFilter] = useState<{
     filter: string;
     value: string;
   } | null>(null);
-  const [allProducts, setAllProducts] = useState<any[]>([]);
-  const [allCategories, setAllCategories] = useState<any[]>([]);
+
+  const productsColumns = [
+    "thumbnail",
+    "title",
+    "brand",
+    "category",
+    "description",
+    "price",
+    "rating",
+    "stock",
+  ];
 
   const abortControllerRef = useRef<AbortController>(undefined);
   const isMounted = useRef(true);
 
-  // Add cleanup for component unmount
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -44,22 +53,15 @@ export default function ProductsPage() {
     };
   }, []);
 
-  // Fetch all products to populate filter options
   useEffect(() => {
-    axios.get("https://dummyjson.com/products?limit=100").then((res) => {
-      setAllProducts(res.data.products);
-    });
+    dispatch(fetchAllProducts());
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
 
-    axios.get("https://dummyjson.com/products/category-list").then((res) => {
-      setAllCategories(res.data);
-    });
-  }, []);
-
-  // Fetch products whenever limit, page, currentTab, or serverFilter changes
   useEffect(() => {
     const controller = new AbortController();
     abortControllerRef.current = controller;
-    
+
     const fetchData = async () => {
       try {
         let queryParams: { [key: string]: string } = {};
@@ -76,14 +78,9 @@ export default function ProductsPage() {
             limit,
             page,
             filters: queryParams,
-            signal: controller.signal
+            signal: controller.signal,
           })
         ).unwrap();
-
-        if (isMounted.current) {
-          // Force update of filter options after successful fetch
-          setAllProducts(prev => [...prev]); // Trigger re-render
-        }
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error("Fetch error:", error);
@@ -115,8 +112,8 @@ export default function ProductsPage() {
   };
 
   const handleFilterChange = (filter: string, value: string) => {
-    abortControllerRef.current?.abort(); // Cancel previous requests
-    
+    abortControllerRef.current?.abort();
+
     if (filter === "client") {
       setClientFilter(value);
       setServerFilter(null);
@@ -130,13 +127,12 @@ export default function ProductsPage() {
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    abortControllerRef.current?.abort(); // Cancel pending requests
+    abortControllerRef.current?.abort();
     setCurrentTab(newValue);
     setServerFilter(null);
     setClientFilter("");
   };
 
-  // Build additional filter options from allProducts data
   const titleOptions = Array.from(
     new Set(
       allProducts
@@ -177,44 +173,6 @@ export default function ProductsPage() {
     });
   }
 
-  const renderSkeletonLoader = () => {
-    return (
-      <TableContainer component={Paper} className="mb-4">
-        <Table>
-          <TableHead>
-            <TableRow>
-              {[
-                "Thumbnail",
-                "Title",
-                "Brand",
-                "Category",
-                "Description",
-                "Price",
-                "Rating",
-                "Stock",
-              ].map((col) => (
-                <TableCell key={col} className="font-bold text-blackCustom">
-                  {col.toUpperCase()}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {[...Array(6)].map((_, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {[...Array(9)].map((_, cellIndex) => (
-                  <TableCell key={cellIndex}>
-                    <Skeleton variant="rectangular" width="100%" height={40} />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
-
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold text-blackCustom mb-4">Products</h1>
@@ -237,23 +195,14 @@ export default function ProductsPage() {
         currentTab={currentTab}
       />
       {loading ? (
-        renderSkeletonLoader()
+        <TableSkeleton columns={productsColumns} />
       ) : error ? (
         <div className="text-red-500">{error}</div>
       ) : (
         <>
           <DataTable
             data={products}
-            columns={[
-              "thumbnail",
-              "title",
-              "brand",
-              "category",
-              "description",
-              "price",
-              "rating",
-              "stock",
-            ]}
+            columns={productsColumns}
             clientFilter={clientFilter}
           />
           <PaginationComp
