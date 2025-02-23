@@ -1,73 +1,115 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchProducts } from "@/lib/api/dummyjson";
-import { Product } from "@/lib/types";
+// store/products/slice.ts
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discountPercentage: number;
+  rating: number;
+  stock: number;
+  brand: string;
+  category: string;
+  thumbnail: string;
+  images: string[];
+  [key: string]: any;
+}
 
 interface ProductsState {
-  data: Product[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  products: Product[];
+  total: number;
+  limit: number;
+  page: number;
+  loading: boolean;
   error: string | null;
-  pagination: {
-    currentPage: number;
-    totalItems: number;
-    pageSize: number;
-  };
 }
 
 const initialState: ProductsState = {
-  data: [],
-  status: "idle",
+  products: [],
+  total: 0,
+  limit: 5,
+  page: 1,
+  loading: false,
   error: null,
-  pagination: {
-    currentPage: 1,
-    totalItems: 0,
-    pageSize: 5,
-  },
 };
 
-export const fetchAllProducts = createAsyncThunk(
+interface FetchProductsParams {
+  limit: number;
+  page: number;
+  filters?: any;
+  signal?: AbortSignal;
+}
+
+export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async ({
-    page = 1,
-    limit = 5,
-    category,
-  }: {
-    page?: number;
-    limit?: number;
-    category?: string;
-  }) => {
-    const response = await fetchProducts({ page, limit, category });
-    return response.data;
+  async ({ limit, page, filters = {}, signal }: FetchProductsParams) => {
+    const skip = (page - 1) * limit;
+    const config = signal ? { signal } : {};
+
+    try {
+      if (
+        Object.keys(filters).length > 0 &&
+        filters[Object.keys(filters)[0]] !== ""
+      ) {
+        const filterKey = Object.keys(filters)[0];
+        const filterValue = filters[filterKey];
+        // console.log(filterKey, filterValue);
+
+        let response;
+        if (filterKey === "category") {
+          response = await axios.get(
+            `https://dummyjson.com/products/category/${filterValue}?limit=${limit}&skip=${skip}`
+          );
+        } else {
+          const queryValue = encodeURIComponent(filterValue);
+          response = await axios.get(
+            `https://dummyjson.com/products/search?q=${queryValue}&limit=${limit}&skip=${skip}`
+          );
+        }
+
+        return response.data;
+      } else {
+        const response = await axios.get(
+          `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
+        );
+        return response.data;
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        throw new Error("Request canceled");
+      }
+      throw error;
+    }
   }
 );
 
 const productsSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {
-    setPageSize: (state, action: PayloadAction<number>) => {
-      state.pagination.pageSize = action.payload;
-      state.pagination.currentPage = 1; // Reset to first page when changing page size
-    },
-    setCurrentPage: (state, action: PayloadAction<number>) => {
-      state.pagination.currentPage = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchAllProducts.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchAllProducts.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.data = action.payload.products;
-        state.pagination.totalItems = action.payload.total;
-      })
-      .addCase(fetchAllProducts.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Failed to fetch products";
-      });
+    builder.addCase(fetchProducts.pending, (state, action) => {
+      state.loading = true;
+      state.error = null;
+      if (action.meta.arg.page === 1) {
+        state.products = [];
+      }
+    });
+    builder.addCase(fetchProducts.fulfilled, (state, action) => {
+      state.loading = false;
+      state.products = action.payload.products;
+      state.total = action.payload.total;
+      // Update pagination state
+      state.limit = action.meta.arg.limit;
+      state.page = action.meta.arg.page;
+    });
+    builder.addCase(fetchProducts.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || "Failed to fetch products";
+    });
   },
 });
 
-export const { setPageSize, setCurrentPage } = productsSlice.actions;
 export default productsSlice.reducer;

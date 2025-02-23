@@ -1,14 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import usersSlice from "./users/slice";
 import productsSlice from "./products/slice";
-import filtersSlice from "./filters/slice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       users: usersSlice,
       products: productsSlice,
-      filters: filtersSlice,
     },
   });
 };
