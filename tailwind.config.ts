@@ -9,9 +9,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        blackCustom: "#322625",
+        greyCustom: "#ebebeb",
+        blueCustom: "#c0e3e5",
+        yellowCustom: "#fdc936"
       },
+      fontFamily: {
+        neutra: ['"Neutra Text"', 'sans-serif']
+      }
     },
   },
   plugins: [],
