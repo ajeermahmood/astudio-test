@@ -1,32 +1,6 @@
-// store/products/slice.ts
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { ProductsState } from "@/lib/types";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  brand: string;
-  category: string;
-  thumbnail: string;
-  images: string[];
-  [key: string]: any;
-}
-
-interface ProductsState {
-  products: Product[];
-  total: number;
-  limit: number;
-  page: number;
-  loading: boolean;
-  error: string | null;
-  allProducts: Product[];
-  allCategories: string[];
-}
 
 const initialState: ProductsState = {
   products: [],
