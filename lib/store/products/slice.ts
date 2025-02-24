@@ -7,7 +7,7 @@ const initialState: ProductsState = {
   total: 0,
   limit: 5,
   page: 1,
-  loading: false,
+  loading: true,
   error: null,
   allProducts: [],
   allCategories: [],

@@ -8,6 +8,7 @@ import createEmotionServer from "@emotion/server/create-instance";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ReactNode } from "react";
+import Head from "next/head";
 
 const cache = createCache({ key: "css", prepend: true });
 cache.compat = true;
@@ -121,9 +122,9 @@ const theme = createTheme({
           "& .MuiButtonBase-root": {
             color: "#ebebeb",
           },
-          "& .MuiPaginationItem-root":{
+          "& .MuiPaginationItem-root": {
             color: "#ebebeb",
-          }
+          },
         },
       },
     },
@@ -142,11 +143,22 @@ export default function ThemeRegistry({ children }: { children: ReactNode }) {
     );
   });
 
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <CacheProvider value={cache}>
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {children}
+        <div style={{ visibility: mounted ? "visible" : "hidden" }}>
+          {children}
+        </div>
       </ThemeProvider>
     </CacheProvider>
   );

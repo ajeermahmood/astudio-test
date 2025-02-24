@@ -24,7 +24,7 @@ export interface AdditionalFilter {
 interface FiltersProps {
   pageSize: number;
   onPageSizeChange: (newPageSize: number) => void;
-  onFilterChange: (filter: string, value: string) => void;
+  onFilterChange: (filter: string, value: string, btn?: boolean) => void;
   clientSideFilter: boolean;
   additionalFilters?: AdditionalFilter[];
   currentTab?: string;
@@ -60,15 +60,20 @@ const Filters: React.FC<FiltersProps> = ({
 
   const handleSearchIconClick = () => {
     setSearchOpen((prev) => !prev);
-    setActiveServerFilter({ key: "", value: "" });
-    onFilterChange("client", "");
+    const additionalFiltersActive = additionalFilters.some(
+      (filter) =>
+        activeServerFilter.key === filter.key && activeServerFilter.value !== ""
+    );
+    if (additionalFiltersActive) {
+      setActiveServerFilter({ key: "", value: "" });
+      onFilterChange("client", "", true);
+    }
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchValue(value);
     onFilterChange("client", value);
-    setActiveServerFilter({ key: "", value: "" });
   };
 
   const handlePageSizeChange = (event: any) => {
@@ -76,6 +81,7 @@ const Filters: React.FC<FiltersProps> = ({
   };
 
   const handleAdditionalFilterChange = (key: string, value: string) => {
+    handleClearFilters();
     setActiveServerFilter({ key, value });
     setSearchValue("");
     onFilterChange(key, value);
@@ -93,7 +99,7 @@ const Filters: React.FC<FiltersProps> = ({
   }, [currentTab]);
 
   return (
-    <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap sm:items-end gap-2 sm:gap-4 mb-4 mt-3">
+    <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap sm:items-end gap-2 sm:gap-4 mb-4 mt-3 min-w-[15rem]">
       <FormControl variant="outlined" size="small" className="min-w-[100px]">
         <InputLabel id="page-size-label">Page Size</InputLabel>
         <Select

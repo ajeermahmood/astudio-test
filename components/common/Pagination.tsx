@@ -27,6 +27,7 @@ const PaginationComp: React.FC<PaginationProps> = ({
         page={currentPage}
         onChange={handleChange}
         color="primary"
+        aria-label="Table pagination"
       />
     </div>
   );

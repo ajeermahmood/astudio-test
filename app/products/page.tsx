@@ -122,12 +122,14 @@ export default function ProductsPage() {
     dispatch(fetchProducts({ limit, page: newPage, filters }));
   };
 
-  const handleFilterChange = (filter: string, value: string) => {
+  const handleFilterChange = (filter: string, value: string, btn?: boolean) => {
     abortControllerRef.current?.abort();
 
     if (filter === "client") {
       setClientFilter(value);
-      setServerFilter(null);
+      if (btn) {
+        setServerFilter(null);
+      }
     } else {
       if (currentTab !== "ALL") {
         setClientFilter(value);

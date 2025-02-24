@@ -101,12 +101,14 @@ export default function UsersPage() {
     return `${year}-${month}-${day}`;
   };
 
-  const handleFilterChange = (filter: string, value: string) => {
+  const handleFilterChange = (filter: string, value: string, btn?: boolean) => {
     abortControllerRef.current?.abort();
 
     if (filter === "client") {
       setClientFilter(value);
-      setServerFilter(null);
+      if (btn) {
+        setServerFilter(null);
+      }
     } else {
       setServerFilter({
         filter,

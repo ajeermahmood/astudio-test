@@ -43,12 +43,20 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   return (
-    <TableContainer component={Paper} className="mb-4 mt-7 scrollbar-hide">
-      <Table>
+    <TableContainer
+      component={Paper}
+      className="mb-4 mt-7 scrollbar-hide"
+    >
+      <Table className="w-full">
         <TableHead>
           <TableRow>
             {columns.map((col) => (
-              <TableCell key={col} className={`font-bold ${col === 'description' ? 'min-w-[20rem]' : 'min-w-[7rem]'}`}>
+              <TableCell
+                key={col}
+                className={`font-bold ${
+                  col === "description" ? "min-w-[20rem]" : "min-w-[7rem]"
+                }`}
+              >
                 {getTableTitles(col)}
               </TableCell>
             ))}
@@ -61,13 +69,15 @@ const DataTable: React.FC<DataTableProps> = ({
                 {columns.map((col) => (
                   <TableCell key={col}>
                     {col === "image" || col === "thumbnail" ? (
-                      <Image
-                        src={row[col]}
-                        alt="User Image"
-                        className="w-12 h-12 object-cover rounded"
-                        width={48}
-                        height={48}
-                      />
+                      <div className="w-12 h-12 relative">
+                        <Image
+                          src={row[col]}
+                          alt="Image"
+                          fill
+                          className="object-cover rounded"
+                          sizes="48px"
+                        />
+                      </div>
                     ) : typeof row[col] === "object" ? (
                       JSON.stringify(row[col])
                     ) : (
