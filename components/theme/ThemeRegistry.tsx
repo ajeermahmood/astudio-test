@@ -17,22 +17,116 @@ const { extractCriticalToChunks, constructStyleTagsFromChunks } =
 
 const theme = createTheme({
   palette: {
-    mode: "light",
+    mode: "dark",
     primary: {
-      main: "#fdc936", // Yellow
+      main: "#fdc936",
     },
     secondary: {
-      main: "#c0e3e5", // Blue
+      main: "#c0e3e5",
     },
     text: {
-      primary: "#322625", // Black
+      primary: "#322625",
     },
     background: {
-      default: "#ebebeb", // Grey
+      default: "#ebebeb",
     },
   },
   typography: {
     fontFamily: '"Neutra Text", sans-serif',
+  },
+  components: {
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          color: "#fdc936",
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#fdc936",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#fdc936",
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          color: "#fdc936",
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#ebebeb !important",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#fdc936 !important",
+          },
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          color: "#ebebeb",
+          "&.Mui-selected": {
+            backgroundColor: "#fdc936",
+            color: "#322625",
+          },
+          "&:hover": {
+            backgroundColor: "#c0e3e5",
+            color: "#322625",
+          },
+        },
+      },
+    },
+
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          mt: 2,
+          backgroundColor: "#231d1d",
+          backgroundImage: "none",
+          boxShadow: "none",
+          border: "1px solid #5f6368",
+          borderRadius: "10px",
+        },
+      },
+    },
+
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#211b1b",
+        },
+      },
+    },
+
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          color: "#ebebeb",
+        },
+      },
+    },
+
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#534241",
+        },
+      },
+    },
+
+    MuiPagination: {
+      styleOverrides: {
+        root: {
+          color: "#ebebeb",
+          "& .MuiButtonBase-root": {
+            color: "#ebebeb",
+          },
+          "& .MuiPaginationItem-root":{
+            color: "#ebebeb",
+          }
+        },
+      },
+    },
   },
 });
 

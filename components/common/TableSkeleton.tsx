@@ -11,12 +11,12 @@ import {
 
 export default function TableSkeleton({ columns }: { columns: string[] }) {
   return (
-    <TableContainer component={Paper} className="mb-4">
+    <TableContainer component={Paper} className="mb-4 mt-7">
       <Table>
         <TableHead>
           <TableRow>
             {columns.map((col, index) => (
-              <TableCell key={col} className="font-bold text-blackCustom">
+              <TableCell key={col} className="font-bold ">
                 {col.toUpperCase()}
               </TableCell>
             ))}
@@ -27,7 +27,7 @@ export default function TableSkeleton({ columns }: { columns: string[] }) {
             <TableRow key={rowIndex}>
               {[...Array(8)].map((_, cellIndex) => (
                 <TableCell key={cellIndex}>
-                  <Skeleton variant="rectangular" width="100%" height={40} />
+                  <Skeleton animation="wave" width="100%" height={40} />
                 </TableCell>
               ))}
             </TableRow>
@@ -37,5 +37,3 @@ export default function TableSkeleton({ columns }: { columns: string[] }) {
     </TableContainer>
   );
 }
-
-

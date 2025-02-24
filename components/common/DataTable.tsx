@@ -21,7 +21,6 @@ const DataTable: React.FC<DataTableProps> = ({
   columns,
   clientFilter = "",
 }) => {
-  
   const filteredData = clientFilter
     ? data.filter((item) =>
         columns.some((col) =>
@@ -30,14 +29,27 @@ const DataTable: React.FC<DataTableProps> = ({
       )
     : data;
 
+  const getTableTitles = (col: string) => {
+    switch (col) {
+      case "firstName":
+        return "FIRST NAME";
+      case "lastName":
+        return "LAST NAME";
+      case "birthDate":
+        return "BIRTH DATE";
+      default:
+        return col.toUpperCase();
+    }
+  };
+
   return (
-    <TableContainer component={Paper} className="mb-4">
+    <TableContainer component={Paper} className="mb-4 mt-7">
       <Table>
         <TableHead>
           <TableRow>
             {columns.map((col) => (
-              <TableCell key={col} className="font-bold text-blackCustom">
-                {col.toUpperCase()}
+              <TableCell key={col} className="font-bold">
+                {getTableTitles(col)}
               </TableCell>
             ))}
           </TableRow>

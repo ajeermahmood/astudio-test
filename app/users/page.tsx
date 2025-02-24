@@ -5,6 +5,8 @@ import PaginationComp from "@/components/common/Pagination";
 import TableSkeleton from "@/components/common/TableSkeleton";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchAllUsers, fetchUsers } from "@/lib/store/users/slice";
+import { Breadcrumbs, Typography } from "@mui/material";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function UsersPage() {
@@ -117,8 +119,14 @@ export default function UsersPage() {
   const emailOptions = Array.from(new Set(allUsers.map((u) => u.email)));
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold text-blackCustom mb-4">Users</h1>
+    <div className="p-8">
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link href="/" className="hover:underline text-blueCustom">
+          Home
+        </Link>
+        <Typography color="background">Users</Typography>
+      </Breadcrumbs>
+      <h1 className="mt-3 text-2xl font-bold text-greyCustom mb-4">Users</h1>
       <Filters
         pageSize={limit}
         onPageSizeChange={handlePageSizeChange}

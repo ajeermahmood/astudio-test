@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 import {
-  TextField,
+  Button,
+  FormControl,
   IconButton,
+  InputLabel,
   MenuItem,
   Select,
-  FormControl,
-  InputLabel,
-  Button,
+  TextField,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ClearIcon from "@mui/icons-material/Clear";
+import React, { useEffect, useState } from "react";
+import CustomDatePicker from "./CustomDatePicker";
 
 export type FilterType = "dropdown" | "date";
 
@@ -92,7 +93,7 @@ const Filters: React.FC<FiltersProps> = ({
   }, [currentTab]);
 
   return (
-    <div className="flex flex-wrap items-center space-x-4 mb-4">
+    <div className="flex flex-wrap items-end space-x-4 mb-4 mt-3">
       <FormControl variant="outlined" size="small" className="min-w-[100px]">
         <InputLabel id="page-size-label">Page Size</InputLabel>
         <Select
@@ -126,16 +127,10 @@ const Filters: React.FC<FiltersProps> = ({
         return (
           <div key={filter.key} className="min-w-[150px]">
             {filter.type === "date" ? (
-              <TextField
-                variant="outlined"
-                size="small"
-                label={filter.label}
-                type="date"
-                InputLabelProps={{ shrink: true }}
+              <CustomDatePicker
+                filter={filter}
                 value={value}
-                onChange={(e) =>
-                  handleAdditionalFilterChange(filter.key, e.target.value)
-                }
+                onChange={handleAdditionalFilterChange}
               />
             ) : (
               <FormControl
@@ -175,8 +170,9 @@ const Filters: React.FC<FiltersProps> = ({
         );
       })}
       <Button
+        className="py-[7.4px] px-[20px]"
         variant="outlined"
-        color="secondary"
+        color="primary"
         startIcon={<ClearIcon />}
         onClick={handleClearFilters}
         disabled={!hasActiveFilters}

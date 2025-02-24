@@ -9,7 +9,8 @@ import {
   fetchAllProducts,
   fetchProducts,
 } from "@/lib/store/products/slice";
-import { Tab, Tabs } from "@mui/material";
+import { Breadcrumbs, Tab, Tabs, Typography } from "@mui/material";
+import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function ProductsPage() {
@@ -176,14 +177,20 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold text-blackCustom mb-4">Products</h1>
+    <div className="p-8">
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link href="/" className="hover:underline text-blueCustom">
+          Home
+        </Link>
+        <Typography color="background">Products</Typography>
+      </Breadcrumbs>
+      <h1 className="mt-3 text-2xl font-bold text-greyCustom mb-4">Products</h1>
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
         textColor="primary"
         indicatorColor="primary"
-        className="mb-4"
+        className="mb-6"
       >
         <Tab value="ALL" label="ALL" />
         <Tab value="Laptops" label="Laptops" />

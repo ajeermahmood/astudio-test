@@ -2,14 +2,14 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-greyCustom">
-      <h1 className="text-4xl font-bold text-blackCustom mb-8">
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold text-greyCustom mb-8">
         Dummy JSON App
       </h1>
       <div className="space-x-4">
         <Link
           href="/users"
-          className="px-4 py-2 bg-blueCustom text-white rounded"
+          className="px-4 py-2 bg-blueCustom text-blackCustom rounded"
         >
           Users
         </Link>
