@@ -119,7 +119,7 @@ export default function UsersPage() {
   const emailOptions = Array.from(new Set(allUsers.map((u) => u.email)));
 
   return (
-    <div className="p-8">
+    <div className="sm:p-5 md:p-8 p-4 scrollbar-hide">
       <Breadcrumbs aria-label="breadcrumb">
         <Link href="/" className="hover:underline text-blueCustom">
           Home

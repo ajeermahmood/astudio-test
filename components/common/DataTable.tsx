@@ -43,12 +43,12 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   return (
-    <TableContainer component={Paper} className="mb-4 mt-7">
+    <TableContainer component={Paper} className="mb-4 mt-7 scrollbar-hide">
       <Table>
         <TableHead>
           <TableRow>
             {columns.map((col) => (
-              <TableCell key={col} className="font-bold">
+              <TableCell key={col} className={`font-bold ${col === 'description' ? 'min-w-[20rem]' : 'min-w-[7rem]'}`}>
                 {getTableTitles(col)}
               </TableCell>
             ))}

@@ -93,7 +93,7 @@ const Filters: React.FC<FiltersProps> = ({
   }, [currentTab]);
 
   return (
-    <div className="flex flex-wrap items-end space-x-4 mb-4 mt-3">
+    <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap sm:items-end gap-2 sm:gap-4 mb-4 mt-3">
       <FormControl variant="outlined" size="small" className="min-w-[100px]">
         <InputLabel id="page-size-label">Page Size</InputLabel>
         <Select
@@ -109,18 +109,32 @@ const Filters: React.FC<FiltersProps> = ({
           ))}
         </Select>
       </FormControl>
-      <IconButton onClick={handleSearchIconClick} color="primary">
-        <SearchIcon />
-      </IconButton>
-      {searchOpen && (
+      <div className="hidden sm:flex items-center gap-2">
+        <IconButton onClick={handleSearchIconClick} color="primary">
+          <SearchIcon />
+        </IconButton>
+        {searchOpen && (
+          <TextField
+            size="small"
+            variant="outlined"
+            value={searchValue}
+            onChange={handleSearchChange}
+            placeholder="Search..."
+          />
+        )}
+      </div>
+
+      <div className="block sm:hidden">
         <TextField
           size="small"
           variant="outlined"
           value={searchValue}
           onChange={handleSearchChange}
           placeholder="Search..."
+          fullWidth
         />
-      )}
+      </div>
+
       {additionalFilters.map((filter) => {
         const value =
           activeServerFilter.key === filter.key ? activeServerFilter.value : "";
@@ -170,7 +184,7 @@ const Filters: React.FC<FiltersProps> = ({
         );
       })}
       <Button
-        className="py-[7.4px] px-[20px]"
+        className="py-[7.4px] px-[20px] min-w-[170px]"
         variant="outlined"
         color="primary"
         startIcon={<ClearIcon />}

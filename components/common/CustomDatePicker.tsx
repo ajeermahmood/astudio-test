@@ -42,6 +42,9 @@ export default function CustomDatePicker({
             yearButton: {
               className: "text-greyCustom",
             },
+            toolbar: {
+              className: "text-greyCustom",
+            },
           }}
         />
       </DemoContainer>
