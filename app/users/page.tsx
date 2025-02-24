@@ -126,7 +126,7 @@ export default function UsersPage() {
         </Link>
         <Typography color="background">Users</Typography>
       </Breadcrumbs>
-      <h1 className="mt-3 text-2xl font-bold text-greyCustom mb-4">Users</h1>
+      <h1 className="mt-3 text-2xl font-bold mb-4">Users</h1>
       <Filters
         pageSize={limit}
         onPageSizeChange={handlePageSizeChange}

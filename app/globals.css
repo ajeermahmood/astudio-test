@@ -10,12 +10,53 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* --background: #0a0a0a; */
-    --foreground: #322625;
+    --foreground: #ebebeb;
   }
 }
+
+@font-face {
+  font-family: 'Neutra Text';
+  src: url('/fonts/neutra-text-light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neutra Text';
+  src: url('/fonts/neutra-text-tf.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neutra Text';
+  src: url('/fonts/neutra-text-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neutra Text';
+  src: url('/fonts/neutra-text-bold-italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neutra Text';
+  src: url('/fonts/neutra-text-alt.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Neutra Text", sans-serif;
 }

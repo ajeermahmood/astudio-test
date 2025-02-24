@@ -184,7 +184,7 @@ export default function ProductsPage() {
         </Link>
         <Typography color="background">Products</Typography>
       </Breadcrumbs>
-      <h1 className="mt-3 text-2xl font-bold text-greyCustom mb-4">Products</h1>
+      <h1 className="mt-3 text-2xl font-bold mb-4">Products</h1>
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
